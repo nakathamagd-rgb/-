@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة الجلاد والحرامي - النسخة الاحترافية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/295/295128.png">
+    
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            --card-bg: rgba(30, 41, 59, 0.75);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --primary: #8b5cf6;
+            --primary-hover: #7c3aed;
+            --accent: #fbbf24;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --danger: #f43f5e;
+            --success: #10b981;
+        }
+
+        body.theme-cyber {
+            --bg-gradient: linear-gradient(135deg, #030712 0%, #064e3b 50%, #022c22 100%);
+            --primary: #10b981;
+            --primary-hover: #059669;
+            --accent: #34d399;
+        }
+
+        body.theme-sunset {
+            --bg-gradient: linear-gradient(135deg, #450a0a 0%, #7c2d12 50%, #9a3412 100%);
+            --primary: #f97316;
+            --primary-hover: #ea580c;
+            --accent: #fdba74;
+        }
+
+        body.theme-royal {
+            --bg-gradient: linear-gradient(135deg, #2e1065 0%, #581c87 50%, #701a75 100%);
+            --primary: #d946ef;
+            --primary-hover: #c084fc;
+            --accent: #f472b6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            transition: background 0.5s ease;
+        }
+
+        .top-controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .top-btn {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid var(--border-glass);
+            color: var(--accent);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .top-btn:hover {
+            background: rgba(139, 92, 246, 0.3);
+            transform: scale(1.05);
+        }
+
+        .settings-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .settings-content {
+            background: #1e293b;
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            padding: 25px;
+            text-align: right;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+
+        .settings-header h3 {
+            color: var(--accent);
+            font-size: 1.3rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .settings-section {
+            margin-bottom: 20px;
+        }
+
+        .settings-section label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .themes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .theme-option {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border-glass);
+            color: white;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .theme-option:hover {
+            border-color: var(--accent);
+        }
+
+        .volume-slider {
+            width: 100%;
+            accent-color: var(--accent);
+            cursor: pointer;
+            height: 6px;
+            border-radius: 3px;
+        }
+
+        .developer-info {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            text-align: center;
+            border: 1px solid var(--border-glass);
+            margin-top: 10px;
+        }
+
+        .developer-info span {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 550px;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            padding: 35px;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo-icon {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+        }
+
+        h1 {
+            color: var(--text);
+            margin-bottom: 8px;
+            font-size: 2rem;
+            font-weight: 900;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .players-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .players-inputs input {
+            width: 100%;
+            padding: 14px 45px 14px 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border-glass);
+            background: rgba(15, 23, 42, 0.6);
+            color: var(--text);
+            font-size: 1.05rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .players-inputs input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s;
+            width: 100%;
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .card-container {
+            perspective: 1200px;
+            width: 220px;
+            height: 310px;
+            margin: 25px auto;
+            cursor: pointer;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+            border-radius: 18px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #6366f1, #4338ca);
+            color: white;
+            border: 2px dashed rgba(255,255,255,0.4);
+        }
+
+        .card-back i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--accent);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .card-front {
+            background: rgba(15, 23, 42, 0.95);
+            color: var(--text);
+            transform: rotateY(180deg);
+            border: 2px solid var(--accent);
+        }
+
+        .role-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+
+        .role-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: var(--accent);
+        }
+
+        .role-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .inspector-box {
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-glass);
+        }
+
+        .suspects-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .suspect-btn {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid var(--border-glass);
+            color: white;
+            padding: 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.05rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .suspect-btn:hover {
+            border-color: var(--accent);
+            background: rgba(139, 92, 246, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .power-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .power-btn {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid var(--border-glass);
+            color: white;
+            padding: 14px 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .power-btn:hover {
+            border-color: var(--accent);
+            background: rgba(251, 191, 36, 0.2);
+        }
+
+        .result-box {
+            font-size: 1.2rem;
+            line-height: 2;
+            margin-bottom: 25px;
+            background: rgba(15, 23, 42, 0.7);
+            padding: 22px;
+            border-radius: 16px;
+            border-right: 5px solid var(--accent);
+            text-align: right;
+            border: 1px solid var(--border-glass);
+        }
+
+        .roles-reveal {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .reveal-item {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid var(--border-glass);
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-controls">
+        <div class="top-btn" onclick="openSettings()" title="الإعدادات">
+            <i class="fa-solid fa-gear"></i>
+        </div>
+        <div class="top-btn" id="soundToggleBtn" onclick="toggleMusic()" title="تشغيل/إيقاف الموسيقى">
+            <i class="fa-solid fa-volume-xmark" id="soundIcon"></i>
+        </div>
+    </div>
+
+    <div class="settings-modal" id="settingsModal">
+        <div class="settings-content">
+            <div class="settings-header">
+                <h3>إعدادات اللعبة</h3>
+                <button class="close-modal" onclick="closeSettings()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="settings-section">
+                <label><i class="fa-solid fa-palette"></i> شكل واجهة اللعبة:</label>
+                <div class="themes-grid">
+                    <button class="theme-option" onclick="setTheme('default')">ليلي فخم</button>
+                    <button class="theme-option" onclick="setTheme('theme-cyber')">سايبر نيون</button>
+                    <button class="theme-option" onclick="setTheme('theme-sunset')">غروب دافئ</button>
+                    <button class="theme-option" onclick="setTheme('theme-royal')">ملكي ملكواني</button>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <label><i class="fa-solid fa-volume-high"></i> مستوى الصوت:</label>
+                <input type="range" min="0" max="1" step="0.05" value="0.3" class="volume-slider" id="volumeSlider" oninput="adjustVolume(this.value)">
+            </div>
+
+            <div class="settings-section">
+                <label><i class="fa-solid fa-code"></i> معلومات المطور:</label>
+                <div class="developer-info">
+                    تصميم وتطوير: <span>مجد إياد نقشة</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div class="container">
+    <div id="screen-setup" class="screen active">
+        <div class="logo-icon"><i class="fa-solid fa-masks-theater"></i></div>
+        <h1>الجلاد والحرامي</h1>
+        <p class="subtitle">لعبة الذكاء والتخمين والتشويق العائلي</p>
+        
+        <div class="players-inputs">
+            <div class="input-group">
+                <i class="fa-solid fa-user"></i>
+                <input type="text" id="p0" placeholder="اسم اللاعب الأول" value="اللاعب 1">
+            </div>
+            <div class="input-group">
+                <i class="fa-solid fa-user"></i>
+                <input type="text" id="p1" placeholder="اسم اللاعب الثاني" value="اللاعب 2">
+            </div>
+            <div class="input-group">
+                <i class="fa-solid fa-user"></i>
+                <input type="text" id="p2" placeholder="اسم اللاعب الثالث" value="اللاعب 3">
+            </div>
+            <div class="input-group">
+                <i class="fa-solid fa-user"></i>
+                <input type="text" id="p3" placeholder="اسم اللاعب الرابع" value="اللاعب 4">
+            </div>
+        </div>
+        
+        <button class="btn" onclick="playClickSound(); startGame();">
+            <i class="fa-solid fa-play"></i> بدء الجولة وتوزيع الأدوار
+        </button>
+    </div>
+
+    <div id="screen-draw" class="screen">
+        <h1 id="current-player-turn" style="color: var(--accent); font-size: 1.5rem;">دور اللاعب</h1>
+        <p class="subtitle">اضغط على الورقة لمعرفة دورك، ثم سلّم الهاتف سراً!</p>
+        
+        <div class="card-container" onclick="flipCard()">
+            <div id="card-element" class="card">
+                <div class="card-face card-back">
+                    <i class="fa-solid fa-hand-pointer"></i>
+                    <span style="font-size: 1.2rem; font-weight: 700;">انقر لكشف الورقة</span>
+                </div>
+                <div class="card-face card-front">
+                    <div id="role-icon" class="role-icon"><i class="fa-solid fa-crown"></i></div>
+                    <div id="role-name" class="role-title">الملك</div>
+                    <div id="role-description" class="role-desc">وصف الدور هنا...</div>
+                </div>
+            </div>
+        </div>
+
+        <button id="next-turn-btn" class="btn" style="display: none;" onclick="playClickSound(); nextTurn();">
+            <i class="fa-solid fa-arrow-left"></i> إخفاء الدور وتسليم الهاتف
+        </button>
+    </div>
+
+    <div id="screen-inspect" class="screen">
+        <h1><i class="fa-solid fa-magnifying-glass" style="color: var(--accent);"></i> مرحلة التحقيق</h1>
+        <div class="inspector-box">
+            <p id="inspector-instruction" style="font-size: 1.05rem; margin-bottom: 12px; line-height: 1.6;"></p>
+            <p class="subtitle" style="margin-bottom: 5px;">من تعتقد أنه <strong>"الحرامي"</strong>؟</p>
+            <div id="suspects-container" class="suspects-grid"></div>
+        </div>
+    </div>
+
+    <div id="screen-king-power" class="screen">
+        <h1><i class="fa-solid fa-crown" style="color: var(--accent);"></i> قرار الملك</h1>
+        <div class="inspector-box">
+            <p id="king-power-instruction" style="font-size: 1.1rem; margin-bottom: 15px; line-height: 1.6;"></p>
+            <p class="subtitle" style="margin-bottom: 10px;">اختر شدة الكف:</p>
+            <div class="power-grid">
+                <button class="power-btn" onclick="selectSlapPower('خفيف 🍃')">خفيف 🍃</button>
+                <button class="power-btn" onclick="selectSlapPower('متوسط ⚡')">متوسط ⚡</button>
+                <button class="power-btn" onclick="selectSlapPower('ناري قاسي 🔥')">ناري 🔥</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-result" class="screen">
+        <h1><i class="fa-solid fa-trophy" style="color: var(--accent);"></i> النتيجة</h1>
+        <div id="result-text" class="result-box"></div>
+        
+        <p style="font-weight: 700; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem;">كشف الأدوار:</p>
+        <div id="roles-reveal" class="roles-reveal"></div>
+
+        <button class="btn" onclick="playClickSound(); resetGame();" style="margin-top: 15px;">
+            <i class="fa-solid fa-rotate-right"></i> جولة جديدة
+        </button>
+    </div>
+</div>
+
+<script>
+    function openSettings() {
+        playClickSound();
+        document.getElementById('settingsModal').style.display = 'flex';
+    }
+
+    function closeSettings() {
+        playClickSound();
+        document.getElementById('settingsModal').style.display = 'none';
+    }
+
+    function setTheme(themeName) {
+        playClickSound();
+        document.body.className = themeName === 'default' ? '' : themeName;
+    }
+
+    let audioCtx = null;
+    let isMusicPlaying = false;
+    let musicInterval = null;
+    let currentVolume = 0.3;
+
+    function initAudioContext() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+    }
+
+    function toggleMusic() {
+        initAudioContext();
+        const icon = document.getElementById('soundIcon');
+        if (isMusicPlaying) {
+            stopBackgroundMusic();
+            icon.className = "fa-solid fa-volume-xmark";
+            isMusicPlaying = false;
+        } else {
+            startBackgroundMusic();
+            icon.className = "fa-solid fa-volume-high";
+            isMusicPlaying = true;
+        }
+    }
+
+    function adjustVolume(val) {
+        currentVolume = parseFloat(val);
+    }
+
+    function startBackgroundMusic() {
+        if (musicInterval) return;
+        const chords = [[261.63, 329.63, 392.00], [220.00, 261.63, 329.63], [174.61, 220.00, 261.63], [196.00, 246.94, 293.66]];
+        let chordIndex = 0;
+        
+        musicInterval = setInterval(() => {
+            if (!isMusicPlaying || !audioCtx) return;
+            try {
+                let currentChord = chords[chordIndex];
+                chordIndex = (chordIndex + 1) % chords.length;
+                currentChord.forEach(freq => {
+                    let osc = audioCtx.createOscillator();
+                    let gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    let now = audioCtx.currentTime;
+                    
+                    gain.gain.setValueAtTime(0.01, now);
+                    gain.gain.linearRampToValueAtTime(currentVolume, now + 0.8);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 4.0);
+                    
+                    osc.start(now);
+                    osc.stop(now + 4.0);
+                });
+            } catch(e) {}
+        }, 4000);
+    }
+
+    function stopBackgroundMusic() {
+        if (musicInterval) {
+            clearInterval(musicInterval);
+            musicInterval = null;
+        }
+    }
+
+    function playClickSound() {
+        initAudioContext();
+        try {
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(500, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.08);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            gain.gain.setValueAtTime(currentVolume, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.08);
+        } catch(e) {}
+    }
+
+    function playFlipSound() {
+        initAudioContext();
+        try {
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(600, audioCtx.currentTime + 0.15);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            gain.gain.setValueAtTime(currentVolume * 1.2, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.15);
+        } catch(e) {}
+    }
+
+    function playSuccessSound() {
+        initAudioContext();
+        try {
+            [523.25, 659.25, 783.99].forEach((freq, index) => {
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime + (index * 0.1));
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                gain.gain.setValueAtTime(currentVolume * 1.2, audioCtx.currentTime + (index * 0.1));
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + (index * 0.1) + 0.3);
+                osc.start(audioCtx.currentTime + (index * 0.1));
+                osc.stop(audioCtx.currentTime + (index * 0.1) + 0.3);
+            });
+        } catch(e) {}
+    }
+
+    function playErrorSound() {
+        initAudioContext();
+        try {
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(110, audioCtx.currentTime + 0.3);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            gain.gain.setValueAtTime(currentVolume * 1.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        } catch(e) {}
+    }
+
+    let players = [];
+    let rolesConfig = [
+        { key: 'king', name: 'الملك', icon: 'fa-crown', desc: 'أنت الملك! ارفع رأسك وقل بصوت عالٍ بكل ثقة: "أنا الملك!"' },
+        { key: 'inspector', name: 'المفتش', icon: 'fa-user-secret', desc: 'أنت المفتش! استعد لتخمين مكان الحرامي بذكاء.' },
+        { key: 'thief', name: 'الحرامي', icon: 'fa-user-ninja', desc: 'أنت الحرامي! ابق هادئاً تماماً ولا تظهر أي توتر لكي لا يكشفك المفتش.' },
+        { key: 'executioner', name: 'الجلاد', icon: 'fa-gavel', desc: 'أنت الجلاد! ابق صامتاً ولا تتحدث نهائياً حتى يتم إعلان الحكم.' }
+    ];
+    
+    let gameState = {
+        playersData: [],
+        currentTurnIndex: 0,
+        isCardFlipped: false,
+        lastGuessResult: null,
+        selectedSuspectedPlayer: null,
+        lastRolesHistory: {} // لتتبع أدوار الجولة السابقة ومنع تكرارها فوراً
+    };
+
+    function startGame() {
+        players = [];
+        for (let i = 0; i < 4; i++) {
+            let nameInput = document.getElementById(`p${i}`).value.trim();
+            players.push(nameInput || `اللاعب ${i + 1}`);
+        }
+
+        let shuffledRoles;
+        let attempts = 0;
+        
+        // خوارزمية ذكية تضمن عدم تكرار نفس الدور لنفس اللاعب مقارنة بالجولة السابقة تماماً
+        do {
+            shuffledRoles = [...rolesConfig].sort(() => Math.random() - 0.5);
+            attempts++;
+            // التحقق من أن هناك اختلافاً في الأدوار عن الجولة السابقة
+            let hasDuplicate = players.some((name, index) => {
+                let prevRole = gameState.lastRolesHistory[name];
+                return prevRole && prevRole === shuffledRoles[index].key;
+            });
+            if (!hasDuplicate || attempts > 10) break;
+        } while (true);
+
+        gameState.playersData = players.map((name, index) => {
+            let role = shuffledRoles[index];
+            gameState.lastRolesHistory[name] = role.key; // حفظ الدور للجولة القادمة
+            return {
+                id: index,
+                name: name,
+                role: role
+            };
+        });
+
+        gameState.currentTurnIndex = 0;
+        gameState.isCardFlipped = false;
+
+        switchScreen('screen-draw');
+        setupTurnView();
+    }
+
+    function setupTurnView() {
+        const currentPlayer = gameState.playersData[gameState.currentTurnIndex];
+        document.getElementById('current-player-turn').innerText = `دور اللاعب: ${currentPlayer.name}`;
+        
+        const card = document.getElementById('card-element');
+        card.classList.remove('flipped');
+        gameState.isCardFlipped = false;
+        document.getElementById('next-turn-btn').style.display = 'none';
+    }
+
+    function flipCard() {
+        const card = document.getElementById('card-element');
+        if (gameState.isCardFlipped) return;
+
+        playFlipSound();
+        card.classList.add('flipped');
+        gameState.isCardFlipped = true;
+
+        const currentPlayer = gameState.playersData[gameState.currentTurnIndex];
+        document.getElementById('role-name').innerText = currentPlayer.role.name;
+        document.getElementById('role-description').innerText = currentPlayer.role.desc;
+        document.getElementById('role-icon').innerHTML = `<i class="fa-solid ${currentPlayer.role.icon}"></i>`;
+
+        document.getElementById('next-turn-btn').style.display = 'flex';
+    }
+
+    function nextTurn() {
+        gameState.currentTurnIndex++;
+        if (gameState.currentTurnIndex < 4) {
+            setupTurnView();
+        } else {
+            startInspectionPhase();
+        }
+    }
+
+    function startInspectionPhase() {
+        switchScreen('screen-inspect');
+        const inspector = gameState.playersData.find(p => p.role.key === 'inspector');
+        document.getElementById('inspector-instruction').innerHTML = 
+            `دور المفتش: <strong style="color:var(--accent);">${inspector.name}</strong><br>اختر المشتبه به:`;
+
+        const container = document.getElementById('suspects-container');
+        container.innerHTML = '';
+
+        gameState.playersData.forEach(p => {
+            if (p.role.key !== 'inspector') {
+                const btn = document.createElement('button');
+                btn.className = 'suspect-btn';
+                btn.innerHTML = `<i class="fa-solid fa-user-tag"></i><span>${p.name}</span>`;
+                btn.onclick = () => {
+                    playClickSound();
+                    handleInspectorGuess(p.id);
+                };
+                container.appendChild(btn);
+            }
+        });
+    }
+
+    function handleInspectorGuess(suspectedId) {
+        const guessedPlayer = gameState.playersData.find(p => p.id === suspectedId);
+        const thiefPlayer = gameState.playersData.find(p => p.role.key === 'thief');
+        
+        gameState.selectedSuspectedPlayer = guessedPlayer;
+        gameState.lastGuessResult = (guessedPlayer.id === thiefPlayer.id);
+
+        startKingPowerPhase();
+    }
+
+    function startKingPowerPhase() {
+        switchScreen('screen-king-power');
+        const kingPlayer = gameState.playersData.find(p => p.role.key === 'king');
+        document.getElementById('king-power-instruction').innerHTML = 
+            `دور الملك: <strong style="color:var(--accent);">${kingPlayer.name}</strong>`;
+    }
+
+    function selectSlapPower(powerName) {
+        playClickSound();
+        showFinalResult(powerName);
+    }
+
+    function showFinalResult(slapPower) {
+        const thiefPlayer = gameState.playersData.find(p => p.role.key === 'thief');
+        const executionerPlayer = gameState.playersData.find(p => p.role.key === 'executioner');
+        const inspectorPlayer = gameState.playersData.find(p => p.role.key === 'inspector');
+        const kingPlayer = gameState.playersData.find(p => p.role.key === 'king');
+        let isCorrect = gameState.lastGuessResult;
+
+        let resultHTML = '';
+
+        if (isCorrect) {
+            playSuccessSound();
+            resultHTML = `🎯 <strong>المفتش (${inspectorPlayer.name}) أصاب!</strong><br>` +
+                         `👑 <strong>الملك (${kingPlayer.name}) حدد الكف:</strong> ${slapPower}<br>` +
+                         `🖐️💥 <strong>العقاب:</strong> الجلاد (${executionerPlayer.name}) يجلد الحرامي (${thiefPlayer.name})!`;
+        } else {
+            playErrorSound();
+            resultHTML = `❌ <strong>المفتش (${inspectorPlayer.name}) أخطأ!</strong><br>` +
+                         `👑 <strong>الملك (${kingPlayer.name}) حدد الكف:</strong> ${slapPower}<br>` +
+                         `🖐️💥 <strong>العقاب:</strong> الجلاد (${executionerPlayer.name}) يجلد المفتش (${inspectorPlayer.name})!`;
+        }
+
+        document.getElementById('result-text').innerHTML = resultHTML;
+
+        const revealContainer = document.getElementById('roles-reveal');
+        revealContainer.innerHTML = '';
+        gameState.playersData.forEach(p => {
+            const item = document.createElement('div');
+            item.className = 'reveal-item';
+            item.innerHTML = `<span><strong>${p.name}</strong></span><span style="color:var(--accent);">${p.role.name}</span>`;
+            revealContainer.appendChild(item);
+        });
+
+        switchScreen('screen-result');
+    }
+
+    function switchScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
+
+    function resetGame() {
+        switchScreen('screen-setup');
+    }
+</script>
+
+</body>
+</html>
